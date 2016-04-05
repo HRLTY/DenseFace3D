@@ -10,7 +10,7 @@ are in the same directory as the executable.
 Installation:
 
 `mkdir build`
-
+`cd build`
 `cmake .. -Ddlib_DIR=path/to/dlib/`
 (make sure the file `dlib_DIR/dlib/cmake` exists)
 
