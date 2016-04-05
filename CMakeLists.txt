@@ -3,19 +3,21 @@
 # information about it at http://www.cmake.org
 #
 
-
 cmake_minimum_required(VERSION 2.8.4)
 
-PROJECT(virtual)
+PROJECT(dense3Dface)
 find_package(OpenCV REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
-file(GLOB VIRTUAL	*.cpp *.h *.c)
-include(../../dlib/cmake)
-
+#find_package(dlib REQUIRED)
+FIND_PACKAGE( Boost 1.40 REQUIRED )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+#include(../../dlib/cmake)
+include(${dlib_DIR}/dlib/cmake)
 include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${GLUT_INCLUDE_DIR})
 
+file(GLOB VIRTUAL	*.cpp *.h *.c)
 IF(APPLE)
 	# we need the X11 OpenGL and not the OSX internal
 	include_directories(/usr/X11/include/)
@@ -27,21 +29,17 @@ ENDIF(APPLE)
 # .cpp files to compile.  Here each example consists of only one .cpp file but
 # in general you will make programs that const of many .cpp files.
 
-ADD_EXECUTABLE(virtual ${VIRTUAL})
+ADD_EXECUTABLE(dense3Dface ${VIRTUAL})
 
 # Then we tell it to link with dlib.
-#TARGET_LINK_LIBRARIES(virtual dlib)
 
-target_link_libraries(virtual ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} dlib)
+target_link_libraries(dense3Dface ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} dlib)
 
 IF(APPLE)
-	target_link_libraries(virtual GL X11 GLU GLUT dlib)
+	target_link_libraries(dense3Dface GL X11 GLU GLUT dlib)
 ENDIF(APPLE)
 
 
-
-FIND_PACKAGE( Boost 1.40 REQUIRED )
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 # Since there are a lot of examples I'm going to use a macro to simply this
 # CMakeLists.txt file.  However, usually you will create only one executable in
 # your cmake projects and use the syntax shown above.

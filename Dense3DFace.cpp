@@ -60,7 +60,7 @@ Work sampler;
 
 
 static const int REVERSE = 50;//auto rotation boundary
-double rotateY = 0, dir = -5;
+double rotateY = 0, dir = 5; //rotation speed
 bool AUTOROTATE = true;
 
 double ZSCALE = 2, XSCALE, YSCALE; //scaling factors
@@ -205,6 +205,7 @@ void drawFace()
         double x_pos, y_pos, z_pos;
         
         std::vector<Point2d> pt(3);
+        
         if(CHANGECOLOR){
             color1 = std::rand() / (double) RAND_MAX;
             color2 = std::rand() / (double) RAND_MAX;
@@ -730,6 +731,8 @@ void resize(int width, int height)
 void readcsv()
 {
     std::ifstream landmark("landmark.txt");
+    if(!landmark.is_open())
+        std::cout<<"You need conn.txt in the same directory as the executable!\n";
     std::vector<std::string> tmp_point3d =  getNextLineAndSplitIntoTokens(landmark);
     int count = 0;
     while(tmp_point3d.size() == 3){
@@ -757,6 +760,8 @@ void readcsv()
     // std::stringstream connectivities(str);
     count = 0;//cout<<count<<endl;
     std::ifstream connectivities("conn.txt");
+    if(!connectivities.is_open())
+        std::cout<<"You need conn.txt in the same directory as the executable!\n";
     std::vector<std::string> tmp_tri = getNextLineAndSplitIntoTokens(connectivities);
     while(tmp_tri.size() == 3){
         triangleIndex tmp;
@@ -782,7 +787,7 @@ void init_opengl(int argc,char** argv) {
     glutInitWindowPosition(40,40);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH); // | GLUT_MULTISAMPLE
-    glutCreateWindow("3D Mesh");
+    glutCreateWindow("Dense3DFace");
     
     myGLinit();
     
