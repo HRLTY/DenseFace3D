@@ -523,7 +523,7 @@ void loadNext() {
     //
     // loadWithPoints(ip,img);
     
-   //imgWithDrawing.set(img);
+    //imgWithDrawing.set(img);
     
     //counter = (counter+1);
 }
@@ -569,11 +569,17 @@ void loadNext() {
 
 void init_webcam(string file)
 {
-    
-    if(file.empty())
+    bool FILE_EXIST = false;
+    if(!file.empty()){
+        std::fstream test(file);
+        if(test.is_open())
+            FILE_EXIST = true;
+        test.close();
+    }
+    if (!FILE_EXIST)
         cap = VideoCapture(0);
     else
-        cap = VideoCapture(file.append(".mp4"));
+        cap = VideoCapture(file);
     detector = get_frontal_face_detector();
     deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
 }
