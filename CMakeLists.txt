@@ -1,3 +1,23 @@
+/*
+Copyright (C) 2016 by Rui Huang
+huangrui@buaa.edu.cn
+
+This file is part of Dense3DFace.
+
+Dense3DFace is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Dense3DFace is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Dense3DFace.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #
 # This is a CMake makefile.  You can find the cmake utility and
 # information about it at http://www.cmake.org
@@ -38,7 +58,6 @@ target_link_libraries(dense3Dface ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBR
 IF(APPLE)
 	target_link_libraries(dense3Dface GL X11 GLU GLUT dlib)
 ENDIF(APPLE)
-
 
 # Since there are a lot of examples I'm going to use a macro to simply this
 # CMakeLists.txt file.  However, usually you will create only one executable in

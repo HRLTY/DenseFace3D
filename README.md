@@ -1,7 +1,7 @@
 # DenseFace3D
 > This is a software for the reconstruction of a real-time 3D face model from a monocular camera.
 
-#####Demo:  [Youtube](https://youtu.be/bCJOI4-Odes)  
+#####Demo:  [Youtube](https://youtu.be/ljXbnFJ0sCI)  or [Tencent Video](http://v.qq.com/page/s/q/p/s0192xdwdqp.html)  
 
 #####Feature:
 
@@ -57,7 +57,25 @@ The inspiration comes from **IntraFace**.
   Approximation Methods for Thin Plate Spline Mappings and Principal Warps
 
 
+#####License:
 
+ Copyright (C) 2016 by Rui Huang
+ huangrui@buaa.edu.cn
+
+ The program Dense3DFace is licensed under the GNU General Public License.
+
+ Dense3DFace is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Dense3DFace is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Dense3DFace.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
