@@ -2,20 +2,20 @@
 Copyright (C) 2016 by Rui Huang
 huangrui@buaa.edu.cn
 
-This file is part of Dense3DFace.
+This file is part of DenseFace3D.
 
-Dense3DFace is free software: you can redistribute it and/or modify
+DenseFace3D is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Dense3DFace is distributed in the hope that it will be useful,
+DenseFace3D is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Dense3DFace.  If not, see <http://www.gnu.org/licenses/>.
+along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #
@@ -25,7 +25,7 @@ along with Dense3DFace.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 2.8.4)
 
-PROJECT(dense3Dface)
+PROJECT(DenseFace3D)
 find_package(OpenCV REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
@@ -49,14 +49,14 @@ ENDIF(APPLE)
 # .cpp files to compile.  Here each example consists of only one .cpp file but
 # in general you will make programs that const of many .cpp files.
 
-ADD_EXECUTABLE(dense3Dface ${VIRTUAL})
+ADD_EXECUTABLE(DenseFace3D ${VIRTUAL})
 
 # Then we tell it to link with dlib.
 
-target_link_libraries(dense3Dface ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} dlib)
+target_link_libraries(DenseFace3D ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} dlib)
 
 IF(APPLE)
-	target_link_libraries(dense3Dface GL X11 GLU GLUT dlib)
+	target_link_libraries(DenseFace3D GL X11 GLU GLUT dlib)
 ENDIF(APPLE)
 
 # Since there are a lot of examples I'm going to use a macro to simply this
