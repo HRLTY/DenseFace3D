@@ -1,22 +1,20 @@
-/*
-Copyright (C) 2016 by Rui Huang
-huangrui@buaa.edu.cn
-
-This file is part of DenseFace3D.
-
-DenseFace3D is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-DenseFace3D is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
-*/
+#Copyright (C) 2016 by Rui Huang
+#huangrui@buaa.edu.cn
+#
+#This file is part of DenseFace3D.
+#
+#DenseFace3D is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#DenseFace3D is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
 
 #
 # This is a CMake makefile.  You can find the cmake utility and
@@ -49,14 +47,14 @@ ENDIF(APPLE)
 # .cpp files to compile.  Here each example consists of only one .cpp file but
 # in general you will make programs that const of many .cpp files.
 
-ADD_EXECUTABLE(DenseFace3D ${VIRTUAL})
+ADD_EXECUTABLE(denseFace3D ${VIRTUAL})
 
 # Then we tell it to link with dlib.
 
-target_link_libraries(DenseFace3D ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} dlib)
+target_link_libraries(denseFace3D ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} dlib)
 
 IF(APPLE)
-	target_link_libraries(DenseFace3D GL X11 GLU GLUT dlib)
+	target_link_libraries(denseFace3D GL X11 GLU GLUT dlib)
 ENDIF(APPLE)
 
 # Since there are a lot of examples I'm going to use a macro to simply this
