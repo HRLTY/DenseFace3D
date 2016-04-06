@@ -14,7 +14,7 @@
 #####Dependencies: [Boost](http://www.boost.org), [Dlib 18.10](http://dlib.net), [OpenCV 2.4](http://opencv.org), [GLUT](https://www.opengl.org/resources/libraries/glut/).
 
 Note: Please make sure `conn.txt` and `landmark.txt`
-and dlib's default face landmarking model file [shape_predictor_68_face_landmarks.dat](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
+and dlib's default face landmarking model file shape_predictor_68_face_landmarks.dat (download [here](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2))
 are in the same directory as the executable.
 
 #####Installation:
@@ -36,7 +36,7 @@ You can specify a video file as the first command line argument.
 
 #####Acknowledgement:
 
-The inspiration comes from **IntraFace**.
+The inspiration comes from [IntraFace](http://www.humansensing.cs.cmu.edu/intraface/index.php).
 
 - Jose Gonzalez-Mora, Fernando De la Torreb, Nicolas Guil, Emilio L.Zapata, 2010
 
@@ -76,6 +76,4 @@ The inspiration comes from **IntraFace**.
 
  You should have received a copy of the GNU General Public License
  along with Dense3DFace.  If not, see <http://www.gnu.org/licenses/>.
-
-
 
