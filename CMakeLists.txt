@@ -22,6 +22,7 @@
 #
 
 cmake_minimum_required(VERSION 2.8.4)
+set (CMAKE_CXX_STANDARD 11)
 
 PROJECT(DenseFace3D)
 find_package(OpenCV REQUIRED)
