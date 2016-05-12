@@ -11,6 +11,8 @@
 
 * Fixed location, stabilization and auto-scaling — The the capture is robust to face movements (both in translation and distance) and presented as the average of the locations of last several frames.
 
+######If you have any question, feel free to reach me at huangrui@buaa.edu.cn. You can learn more about me from [my CV](http://hrlty.github.io/about/).
+
 #####Dependencies: [Boost](http://www.boost.org), [Dlib 18.10](http://dlib.net), [OpenCV 2.4](http://opencv.org), [GLUT](https://www.opengl.org/resources/libraries/glut/).
 
 Note: Please make sure `conn.txt` and `landmark.txt`
