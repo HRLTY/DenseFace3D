@@ -631,7 +631,7 @@ void saveOpenGLBuffer() {
         flip(opengl_image_4b,opengl_image_4b,0);
         mixChannels(&opengl_image_4b, 1, &opengl_image, 1, &(Vec6i(0,0,1,1,2,2)[0]), 3);
     }
-    stringstream ss; ss << "opengl_buffer_" << opengl_buffer_num++ << ".bmp";
+    stringstream ss; ss << "opengl_buffer_" << opengl_buffer_num++ << ".jpg";
     imwrite(ss.str(), opengl_image);
 }
 
