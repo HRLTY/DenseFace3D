@@ -3,25 +3,26 @@
  huangrui@buaa.edu.cn
  
  This file is part of DenseFace3D.
-
-DenseFace3D is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-DenseFace3D is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
+ DenseFace3D is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ DenseFace3D is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "stdafx.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #include "cv.h"
 #include "highgui.h"
@@ -63,12 +64,13 @@ void drawFace();
 void drawFaceWithTex();
 void drawPrimitiveFace();
 void loadTPSwithControlPoints();
-
+void callAndWait();
 std::vector<triangleIndex> triangles;//fixed triangulation for primitive face.
 std::vector<Point3d> landmark_points; //fixed landmark (now only used for depth values)
+std::vector<double> depth, new_depth;
 //full_object_detection realtime_landmark_detection; //the real time landmarks
 std::vector<std::vector<point> > history_landmarks; //used for calculating the average
-
+std::vector<std::vector<point> > historyForDepth; //used for calculating the average
 std::vector<long> x_coor, y_coor; //current active average landmark coordinates
 long x_mean = 0, y_mean = 0;
 
@@ -87,6 +89,7 @@ bool CHANGECOLOR = true;
 
 long XTRANS = 315, YTRANS = 150;
 bool READY = false; //remain false until the first face is detected
+static bool NEW_DEPTH = false;
 
 //for triangulation
 cv::Subdiv2D delaunay;
@@ -140,7 +143,19 @@ void display(void)
     // draw only on left part
     //glViewport(0, 0, vPort[2]/2, vPort[3]);
     //printf("viewport : (0,0,%d,%d)\n",vPort[2], vPort[3]);
-    
+    double ALFA = 0.7;
+    if(NEW_DEPTH){
+        double max = 0, min = 0;
+        for(int i = 0; i < 68; i++){
+            depth[i] = new_depth[i] * ALFA + depth[i] * (1 - ALFA);
+            if(new_depth[i] > max)
+                max = new_depth[i];
+            if(new_depth[i] < min)
+                min = new_depth[i];
+        }
+        ZSCALE = 100 / (max - min);
+        NEW_DEPTH = false;
+    }
     glPushMatrix();
     //must be called before drawFaceTex since this one loads control points
     drawFace();
@@ -385,7 +400,8 @@ void drawPrimitiveFace()
                 x_pos -= x_mean; y_pos -= y_mean;
                 //glVertex3d(pp.x(), pp.y(), p.z * ZSCALE);
                 x_pos *= XSCALE * .8; y_pos *= YSCALE * .8;
-                z_pos = p.z * ZSCALE;
+                //z_pos = p.z * ZSCALE;
+                z_pos = depth[index-1] * ZSCALE;
                 glVertex3d(x_pos, y_pos, z_pos);
                 //	printf("triangle %d point %lu: (%f,%f,%f)\n", count, j, p.x, p.y,p.z);
             }
@@ -399,8 +415,11 @@ void drawPrimitiveFace()
 void loadTPSwithControlPoints()
 {
     std::vector<long> z_coor;
-    for (auto i = landmark_points.begin(); i != landmark_points.end(); i++) {
-        z_coor.push_back(i->z * ZSCALE);
+    //    for (auto i = landmark_points.begin(); i != landmark_points.end(); i++) {
+    //        z_coor.push_back(i->z * ZSCALE);
+    //    }
+    for (auto i = depth.begin(); i != depth.end(); i++) {
+        z_coor.push_back(*i * ZSCALE);
     }
     std::vector<long> temx = x_coor, temy = y_coor;
     for (long& j : temx)
@@ -414,10 +433,41 @@ void loadTPSwithControlPoints()
 
 void updateLandmarkCoor(std::vector<point>& newPoints) //calculate the averate coordinate
 {
-    
+    static time_t last = 0;
+    int ROUND = 60;
     if(history_landmarks.size() >= 3)//add new
         history_landmarks.erase(history_landmarks.begin());
     history_landmarks.push_back(newPoints);
+    time_t current = std::time(NULL);
+    if(historyForDepth.size() >= ROUND && current - last >= 10){//recover depth once for a while(at least 10 secs)
+        //prepare to write tracking to file
+        stringstream x, y;
+        for (auto i = 0; i < historyForDepth.size(); i++) {
+            int landmark_count = historyForDepth[i].size();
+            for (int j = 0; j < landmark_count; j++) {
+                x << historyForDepth[i][j].x()<<' ';
+                y << historyForDepth[i][j].y()<<' ';
+            }
+            x<<'\n'; y<<'\n';
+        }
+        fstream track_points("track.txt", ios_base::out);
+        x.seekg(0, ios::end);
+        y.seekg(0, ios::end);
+        track_points.write(x.str().c_str(), x.tellg());
+        track_points.write(y.str().c_str(), y.tellg());
+        track_points.flush();
+        track_points.close();
+        historyForDepth.clear();
+        
+        last = std::time(NULL);
+        std::thread callMatlab(callAndWait);
+        callMatlab.detach();
+        
+    }else{
+        if(historyForDepth.size() >= ROUND)
+            historyForDepth.erase(historyForDepth.begin());
+        historyForDepth.push_back(newPoints);
+    }
     
     int num = (history_landmarks.end()-1)->size();
     x_coor.clear(); y_coor.clear();
@@ -452,6 +502,26 @@ void updateLandmarkCoor(std::vector<point>& newPoints) //calculate the averate c
     //
 }
 
+void callAndWait()
+{
+    string com = R"(matlab -nodisplay -nojvm -nosplash -nodesktop -r "run('/Users/huangrui/Developer/dlib-18.18/examples/3dMesh/em-sfm/main.m'), exit")";
+    string oldPath(getenv("PATH"));
+    oldPath.append(":/Applications/MATLAB_R2015b.app/bin/");
+    setenv("PATH", oldPath.c_str(), 1);
+    system(com.c_str());
+    
+    fstream new_depth_file("new_depth.txt", ios_base::in);
+    assert(new_depth_file.is_open());
+    new_depth.clear();
+    double tem_depth;
+    int count = 0;
+    while(new_depth_file >> tem_depth){
+        new_depth.push_back(tem_depth);
+        cout<<"["<<++count<<"]"<<tem_depth<<' ';
+    }
+    assert(new_depth.size() == 68);
+    NEW_DEPTH = true;
+}
 void calNewSampleAndInsertForTri()
 {
     std::vector<dpoint> tem;
@@ -648,12 +718,12 @@ void key(unsigned char key, int x, int y)
             //depth augmentation
         case 'w':
         case 'W':
-            ZSCALE += 0.1;
+            ZSCALE += 5;
             cout<<"z-scale changed to--> "<<ZSCALE<<endl;
             break;
         case 'Q':
         case 'q':
-            ZSCALE -= 0.1;
+            ZSCALE -= 5;
             cout<<"z-scale changed to--> "<<ZSCALE<<endl;
             break;
             
@@ -760,7 +830,10 @@ void readcsv()
     int count = 0;
     while(tmp_point3d.size() == 3){
         landmark_points.push_back(Point3d(std::stod(tmp_point3d[0]), std::stod(tmp_point3d[1]), std::stod(tmp_point3d[2])));
+        //initial depth(fixed)
+        depth.push_back(0.);//std::stod(tmp_point3d[2]));
         count ++;
+        
         tmp_point3d =  getNextLineAndSplitIntoTokens(landmark);
     }
     landmark.close();
@@ -829,7 +902,7 @@ int main(int argc, char** argv)
         string filename;
         if(argc >= 2)
             filename = string(argv[1]);
-        
+        //filename = "/Users/huangrui/Developer/dlib-18.18/examples/3dMesh/build/apple.mp4";
         //prepare dlib and cam
         init_webcam(filename);
         
