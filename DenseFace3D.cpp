@@ -3,20 +3,20 @@
  huangrui@buaa.edu.cn
  
  This file is part of DenseFace3D.
-
-DenseFace3D is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-DenseFace3D is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
+ DenseFace3D is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ DenseFace3D is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "stdafx.h"
 #include <vector>
@@ -32,6 +32,11 @@ along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
 #include <dlib/image_processing/render_face_detections.h>
 #include <dlib/image_processing.h>
 #include <dlib/gui_widgets.h>
+
+//added for sfm
+#define CERES_FOUND 1
+#include <opencv2/core.hpp>
+#include <opencv2/sfm.hpp>
 
 #if defined(__APPLE__)
 #  include <OpenGL/gl.h>
@@ -68,6 +73,7 @@ std::vector<triangleIndex> triangles;//fixed triangulation for primitive face.
 std::vector<Point3d> landmark_points; //fixed landmark (now only used for depth values)
 //full_object_detection realtime_landmark_detection; //the real time landmarks
 std::vector<std::vector<point> > history_landmarks; //used for calculating the average
+std::vector<Vec3f> point_cloud_est;
 
 std::vector<long> x_coor, y_coor; //current active average landmark coordinates
 long x_mean = 0, y_mean = 0;
@@ -386,6 +392,11 @@ void drawPrimitiveFace()
                 //glVertex3d(pp.x(), pp.y(), p.z * ZSCALE);
                 x_pos *= XSCALE * .8; y_pos *= YSCALE * .8;
                 z_pos = p.z * ZSCALE;
+                if(!point_cloud_est.empty()){
+                    double calz = point_cloud_est[index-1][2];
+                    //if(abs(calz) < 300)
+                        z_pos = calz * 5;
+                }
                 glVertex3d(x_pos, y_pos, z_pos);
                 //	printf("triangle %d point %lu: (%f,%f,%f)\n", count, j, p.x, p.y,p.z);
             }
@@ -411,11 +422,33 @@ void loadTPSwithControlPoints()
     tps->insert(temx, z_coor, temy);
     tps->calc_tps();
 }
-
+void parser_2D_tracks(std::vector<std::vector<point> >& history, std::vector<Mat>& points2d)
+{
+    
+    
+    double x, y;
+    
+    int n_frames = history_landmarks.size(), n_tracks = 68;
+    
+    
+    // embed data in reconstruction api format
+    
+    for (int i = 0; i < n_frames; ++i)
+    {
+        Mat_<double> frame(2, n_tracks);
+        
+        for (int j = 0; j < n_tracks; ++j)
+        {
+            frame(0,j) = history_landmarks[i][j].x();
+            frame(1,j) = history_landmarks[i][j].y();
+        }
+        points2d.push_back(Mat(frame));
+    }
+}
 void updateLandmarkCoor(std::vector<point>& newPoints) //calculate the averate coordinate
 {
     
-    if(history_landmarks.size() >= 3)//add new
+    if(history_landmarks.size() >= 21)//add new
         history_landmarks.erase(history_landmarks.begin());
     history_landmarks.push_back(newPoints);
     
@@ -444,6 +477,43 @@ void updateLandmarkCoor(std::vector<point>& newPoints) //calculate the averate c
     
     x_mean /= x_coor.size();
     y_mean /= y_coor.size();
+    
+    if(history_landmarks.size() >= 20)
+    {
+        // Read 2D points from text file
+        std::vector<Mat> points2d;
+        parser_2D_tracks( history_landmarks, points2d );
+        
+        // Set the camera calibration matrix
+        const double f  = 1914;
+        double cx = 250, cy = 250;
+        
+        Matx33d K = Matx33d( f, 0, cx,
+                            0, f, cy,
+                            0, 0,  1);
+        
+        /// Reconstruct the scene using the 2d correspondences
+        
+        bool is_projective = true;
+        std::vector<Mat> Rs_est, ts_est, points3d_estimated;
+        cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated, is_projective);
+        // Create the pointcloud
+        cout << "Recovering points  ... ";
+        
+        // recover estimated points3d
+        //std::vector<Vec3f> point_cloud_est;
+        
+        point_cloud_est.clear();
+        double sum = 0;
+        for (int i = 0; i < points3d_estimated.size(); ++i){
+            Vec3f point = (points3d_estimated[i]);
+            point_cloud_est.push_back(point);
+            sum += point[2];
+        }
+        double z_mean = sum / 68;
+
+        cout << "[DONE]" << endl;
+    }
     
     //    for (long& j : x_coor)
     //        j -= x_mean;
