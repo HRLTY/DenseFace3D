@@ -1,9 +1,9 @@
 # DenseFace3D
 > This is a software for the reconstruction of a real-time 3D face model from a monocular camera.
 
-#####Demo:  [Youtube](https://youtu.be/ljXbnFJ0sCI)  or [Tencent Video](http://v.qq.com/page/s/q/p/s0192xdwdqp.html)  
+####Demo:  [Youtube](https://youtu.be/ljXbnFJ0sCI)  or [Tencent Video](http://v.qq.com/page/s/q/p/s0192xdwdqp.html)  
 
-#####Feature:
+####Feature:
 
 * Real-time landmark detection, mesh densifying (spline interpolation), triangulation and texture mapping for each frame.
 
@@ -11,7 +11,7 @@
 
 * Fixed location, stabilization and auto-scaling — The the capture is robust to face movements (both in translation and distance) and presented as the average of the locations of last several frames.
 
-######If you have any question, feel free to reach me at huangrui@buaa.edu.cn. You can learn more about me from [my CV](http://hrlty.github.io/about/).
+### If you have any question, feel free to reach me at huangruiwizard@gmail.com. *Research/intern opportunities regarding computer science(computer vision would be greater) are welcomed.* I am a senior undergraduate currently, this work was done during my internship at Institute of Automation, Chinese Academy of Sciences. You can learn more about me from [my CV](http://hrlty.github.io/about/).
 
 #####Dependencies: [Boost](http://www.boost.org), [Dlib 18.10](http://dlib.net), [OpenCV 2.4](http://opencv.org), [GLUT](https://www.opengl.org/resources/libraries/glut/).
 
