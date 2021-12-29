@@ -23,8 +23,7 @@ along with DenseFace3D.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <fstream>
 
-#include "cv.h"
-#include "highgui.h"
+#include "opencv2/opencv.hpp"
 
 #include <dlib/opencv.h>
 #include <opencv2/highgui/highgui.hpp>
