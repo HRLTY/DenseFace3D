@@ -22,6 +22,28 @@ Note: Please make sure `conn.txt` and `landmark.txt`
 and dlib's default face landmarking model file shape_predictor_68_face_landmarks.dat (download [here](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2))
 are in the same directory as the executable.
 
+##### Installation with Docker  
+Install [Docker](https://www.docker.com/), clone project from git and build docker image:  
+```bash  
+docker build -t dense-face-3d:latest .
+```  
+
+Then disable access to X server:  
+```bash  
+xhost +
+```  
+
+Launch container with the following params to use GUI (do not forget to specify absolute path to project):  
+```bash  
+docker run -it --rm --privileged \
+--network host --tmpfs=/tmp \
+ -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+ -e DISPLAY=:0 -e QT_X11_NO_MITSHM=1 \
+ -v <ABSOLUTE PATH TO PROJECT>:/DenseFace3D \
+ --name=dense_container dense-face-3d:latest
+```  
+Then in container follow the installation instructions.  
+
 ##### Installation:
 
 `mkdir build`

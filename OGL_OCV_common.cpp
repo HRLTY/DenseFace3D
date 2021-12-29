@@ -101,7 +101,7 @@ void copyImgToTex(const Mat& _tex_img, GLuint* texID, double* _twr, double* _thr
 	if (tex_img.type() == region.type()) {
 		tex_img.copyTo(region);
 	} else if (tex_img.type() == CV_8UC1) {
-		cvtColor(tex_img, region, CV_GRAY2BGR);
+		cvtColor(tex_img, region, COLOR_GRAY2BGR);
 	} else {
 		tex_img.convertTo(region, CV_8UC3, 255.0);
 	}

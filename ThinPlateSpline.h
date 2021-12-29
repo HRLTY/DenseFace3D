@@ -65,7 +65,7 @@ public:
     double bending_energy = 0.0;
     int p;
     boost::numeric::ublas::matrix<double> mtx_l,mtx_v,mtx_orig_k,valid;
-    bool READY = FALSE;
+    bool READY = false;
     ThinPlateSpline(int p);
     void insert(const std::vector<long>& x_coor, const std::vector<long>& y_coor, const std::vector<long>& z_coor);
     void calc_tps();
